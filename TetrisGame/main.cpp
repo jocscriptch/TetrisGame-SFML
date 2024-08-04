@@ -11,6 +11,8 @@ int main()
 	RenderWindow window(VideoMode(600, 600), "Tetris");
 	window.setFramerateLimit(60);
 
+	board.installPart();
+
 	while (window.isOpen())
 	{
 		Event event;
