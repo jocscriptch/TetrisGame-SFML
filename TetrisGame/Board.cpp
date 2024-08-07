@@ -194,6 +194,25 @@ void Board::rotatePart() {
 		}
 	}
 }
+
+int Board::checkLine()
+{
+	int aux, lines = 0;
+
+	for (int i = 23; i >= 0; i--) {
+		aux = 0;
+		for (int j = 0; j < 12; j++){
+			if (board[i][j] > 0) aux++;
+			if (lines > 0) board[i + lines][j] = board[i][j], board[i][j] = 0;
+		}
+		if (aux == 12) {
+			for (int j = 0; j < 12; j++) board[i][j] = 0;
+			lines++;
+		}
+	}
+	return lines;
+}
+
 void Board::draw(RenderTarget& rt, RenderStates rs) const
 {
 	for (int i = 0; i < 24; i++) {

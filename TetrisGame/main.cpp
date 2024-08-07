@@ -1,6 +1,7 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 #include "Board.h"
+#include <fstream>
 
 using namespace std;
 using namespace sf;
@@ -14,6 +15,11 @@ int main()
 	board.installPart();
 
 	int right = 0, left = 0, up = 0;
+	int score = 0;
+
+	int maxScore = 0;
+	fstream in("maxScore.txt");
+	in >> maxScore;
 
 	while (window.isOpen())
 	{
@@ -58,11 +64,22 @@ int main()
 
 		if (board.updateBoard()) {
 			if (!board.installPart()) {
-				cout << "Game Over"<<endl;
+				if (score > maxScore) {
+					cout << "New Record" << endl;
+					ofstream out("maxScore.txt");
+					out << score;
+				}
+				else {
+					cout << "Game Over" << endl;
+				}
 				window.close();
 			}
 		}
 		board.updateBoardColors();
+
+		int newScore = board.checkLine() * 5;
+		score += newScore;
+		cout << score << endl;
 		window.clear(Color(20, 20, 20));
 		window.draw(board);
 		window.display();

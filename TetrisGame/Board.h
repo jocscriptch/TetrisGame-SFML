@@ -27,6 +27,7 @@ class Board : public Drawable
 		void updateLimitTimer(int); //actualizar el limite de caida de pieza
 		void right();
 		void left();
+		int checkLine();
 		void rotatePart();
 		void CleanBoard(); //limpiar el tablero
 		virtual void draw(RenderTarget&, RenderStates) const; //dibujar

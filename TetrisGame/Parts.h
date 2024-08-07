@@ -15,4 +15,3 @@ class Parts
 		void rotatePart(int);
 		void unRotatePart(int);
 };
-
