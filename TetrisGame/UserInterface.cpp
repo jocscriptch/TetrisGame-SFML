@@ -37,14 +37,14 @@ UserInterface::UserInterface()
 	// titulo de gameover
 	gameOverText.setFont(font);
 	gameOverText.setFillColor(Color::Red);
-	gameOverText.setPosition(Vector2f(380, 50));
+	gameOverText.setPosition(Vector2f(80, 150));
 	gameOverText.setString("¡GameOver!");
 	gameOverText.setCharacterSize(25);
 
 	// titulo de nueva puntuacion
 	newScoreText.setFont(font);
 	newScoreText.setFillColor(Color::Green);
-	newScoreText.setPosition(Vector2f(370, 50));
+	newScoreText.setPosition(Vector2f(365, 50));
 	newScoreText.setString("¡Nuevo Récord!");
 	newScoreText.setCharacterSize(25);
 }

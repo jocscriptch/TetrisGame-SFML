@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "Board.h"
 #include "UserInterface.h"
+#include "Sounds.h"
 #include <fstream>
 
 using namespace std;
@@ -11,6 +12,7 @@ int main()
 {
 	Board board;
 	UserInterface ui;
+	Sounds sounds;
 
 	RenderWindow window(VideoMode(600, 600), "Tetris");
 	window.setFramerateLimit(60);
@@ -28,17 +30,15 @@ int main()
 	ui.SetMaxCore(maxScore);
 	ui.SetScore(score);
 
+	sounds.PlayMusic();
+
 	while (window.isOpen())
 	{
 		Event event;
-		while (window.pollEvent(event))
-		{
+		while (window.pollEvent(event)){
 			if (event.type == Event::Closed) window.close();
-
 		}
-		
 		if (live) {
-
 			//rotacion
 			if (Keyboard::isKeyPressed(Keyboard::Up) && !up)board.rotatePart(), up = 1;
 			else if (!Keyboard::isKeyPressed(Keyboard::Up)) up = 0;
@@ -76,13 +76,17 @@ int main()
 			if (board.updateBoard()) {
 				if (!board.installPart()) {
 					live = 0;
+					board.CleanBoard();
+					sounds.PauseMusic();
 					if (score > maxScore) {
 						ui.NewScore();
 						ofstream out("maxScore.txt");
 						out << score;
+						sounds.PlayNewScore();
 					}
 					else {
 						ui.GameOver();
+						sounds.PlayGameOver();
 					}
 				}
 			}
@@ -91,6 +95,7 @@ int main()
 			int newScore = board.checkLine() * 5;
 			score += newScore;
 			ui.SetScore(score);
+			if (newScore > 0)sounds.PlayLine();
 		}
 		window.clear(Color(20, 20, 20));
 		window.draw(board);

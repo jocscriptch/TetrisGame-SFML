@@ -213,6 +213,11 @@ int Board::checkLine()
 	return lines;
 }
 
+void Board::CleanBoard()
+{
+	memset(board, 0, sizeof(board));
+}
+
 void Board::draw(RenderTarget& rt, RenderStates rs) const
 {
 	for (int i = 0; i < 24; i++) {
