@@ -136,10 +136,13 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parts.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="Parts.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="maxScore.txt" />

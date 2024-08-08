@@ -12,7 +12,7 @@ class UserInterface : public Drawable
 		Text scoreTextTitle;
 		Text scoreText;
 		Text maxScoreTextTitle;
-		Text maxScore;
+		Text maxScoreText;
 		Text dev;
 		Text gameOverText;
 		Text newScoreText;
@@ -21,8 +21,9 @@ class UserInterface : public Drawable
 
 	public:
 		UserInterface();
-		void setScore(int);
-		void setMaxCore(int);
-		void gameOver();
-		void newScore();
+		void SetScore(int);
+		void SetMaxCore(int);
+		void GameOver();
+		void NewScore();
+		virtual void draw(RenderTarget&, RenderStates) const;
 };
