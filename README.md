@@ -14,7 +14,7 @@ Este es un proyecto clásico de Tetris desarrollado en C++ utilizando la bibliot
 - Compilador C++ compatible con C++11 o superior
 ## ⚙️ Instalación y Ejecución
 
-1. **Requesitos Previos:**
+1. **Requisitos Previos:**
 
 - Visual Studio 2022: Asegúrate de tener instalado Visual Studio 2022 con el paquete de desarrollo para escritorio con C++.
 - SFML: Descarga e instala la biblioteca [SFML](https://www.sfml-dev.org/) compatible con Visual Studio 2022.
