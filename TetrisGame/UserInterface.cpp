@@ -2,82 +2,74 @@
 
 UserInterface::UserInterface()
 {
-	if (!font.loadFromFile("Luckiest.ttf")) {
-		cout << "Error al cargar fuente" << endl;
-	}
-	// Titulo de la puntuacion actual del jugador
-	scoreTextTitle.setFont(font);
-	scoreTextTitle.setFillColor(Color::Yellow);
-	scoreTextTitle.setPosition(Vector2f(365, 150));
-	scoreTextTitle.setString("Puntuación");
+    if (!font.loadFromFile("Luckiest.ttf")) {
+        cerr << "Error al cargar la fuente" << endl;
+    }
 
-	// Record maximo del jugador
-	maxScoreTextTitle.setFont(font);
-	maxScoreTextTitle.setFillColor(Color::Magenta);
-	maxScoreTextTitle.setPosition(Vector2f(400, 300));
-	maxScoreTextTitle.setString("Récord");
+    formatText(scoreTextTitle, font, Color::Yellow, { 365, 200 }, 30, "Puntuación");
+    formatText(maxScoreTextTitle, font, Color::Magenta, { 402, 310 }, 30, "Récord");
+    formatText(scoreText, font, Color::White, { 418, 250 }, 25, "0000");
+    formatText(maxScoreText, font, Color::White, { 420, 360 }, 25, "0000");
+    formatText(linesTextTitle, font, Color(0, 127, 255), {402, 410}, 30, "Líneas");
+    formatText(linesText, font, Color::White, { 420, 460 }, 25, "0000");
+    formatText(developerInfo, font, Color::Cyan, { 394, 555 }, 15, "\t\t\t\tBy\n\tjocscriptch");
+    formatText(gameOverText, font, Color::Red, { 380, 30 }, 30, "¡Game Over!");
+    formatText(newScoreText, font, Color::Green, { 320, 20 }, 35, "¡Nuevo Récord!");
 
-	// muestra la puntacion numerica
-	scoreText.setFont(font);
-	scoreText.setFillColor(Color::White);
-	scoreText.setPosition(Vector2f(415, 200));
-	
-	// muestra el record numerico
-	maxScoreText.setFont(font);
-	maxScoreText.setFillColor(Color::White);
-	maxScoreText.setPosition(Vector2f(415, 350));
-
-	// desarrollador
-	dev.setFont(font);
-	dev.setFillColor(Color::Cyan);
-	dev.setPosition(Vector2f(394, 555));
-	dev.setString("\t\t\t\tBy\n\tjocscriptch");
-	dev.setCharacterSize(15);
-
-	// titulo de gameover
-	gameOverText.setFont(font);
-	gameOverText.setFillColor(Color::Red);
-	gameOverText.setPosition(Vector2f(80, 150));
-	gameOverText.setString("¡GameOver!");
-	gameOverText.setCharacterSize(25);
-
-	// titulo de nueva puntuacion
-	newScoreText.setFont(font);
-	newScoreText.setFillColor(Color::Green);
-	newScoreText.setPosition(Vector2f(365, 50));
-	newScoreText.setString("¡Nuevo Récord!");
-	newScoreText.setCharacterSize(25);
+    gameOverText.setCharacterSize(25);
 }
 
-void UserInterface::SetScore(int score) 
+void UserInterface::formatText(Text& text, const Font& font, const Color& color, const Vector2f& position, unsigned int size, const string& str)
 {
-	if (score <= 9) scoreText.setString("000" + to_string(score));
-	else if (score <= 99) scoreText.setString("00" + to_string(score));
-	else if (score <= 999) scoreText.setString("000" + to_string(score));
-	else if (score <= 9999) scoreText.setString(to_string(score));
-	else scoreText.setString("9999");
+    text.setFont(font);
+    text.setFillColor(color);
+    text.setPosition(position);
+    text.setCharacterSize(size);
+    text.setString(str);
 }
 
-void UserInterface::SetMaxCore(int max)
+void UserInterface::setScore(int score)
 {
-	if (max <= 9) maxScoreText.setString("000" + to_string(max));
-	else if (max <= 99) maxScoreText.setString("00" + to_string(max));
-	else if (max <= 999) maxScoreText.setString("000" + to_string(max));
-	else if (max <= 9999) maxScoreText.setString(to_string(max));
-	else maxScoreText.setString("9999");
+    scoreText.setString((score <= 9 ? "000" : score <= 99 ? "00" : score <= 999 ? "0" : "") + to_string(score));
 }
 
-void UserInterface::GameOver() { gameOver = 1; }
-
-void UserInterface::NewScore() { newScore = 1; }
-
-void UserInterface::draw(RenderTarget &rt, RenderStates rs)const
+void UserInterface::setMaxScore(int max)
 {
-	rt.draw(scoreTextTitle, rs);
-	rt.draw(scoreText, rs);
-	rt.draw(maxScoreTextTitle, rs);
-	rt.draw(maxScoreText, rs);
-	rt.draw(dev, rs);
-	if (gameOver) rt.draw(gameOverText, rs);
-	if (newScore) rt.draw(newScoreText, rs);
+    maxScoreText.setString((max <= 9 ? "000" : max <= 99 ? "00" : max <= 999 ? "0" : "") + to_string(max));
+}
+
+void UserInterface::setLines(int lines) {
+    linesText.setString((lines <= 9 ? "000" : lines <= 99 ? "00" : lines <= 999 ? "0" : "") + to_string(lines));
+}
+
+void UserInterface::triggerGameOver()
+{
+    gameState = GameState::GameOver;
+}
+
+void UserInterface::triggerNewScore()
+{
+    gameState = GameState::NewScore;
+}
+
+void UserInterface::draw(RenderTarget& target, RenderStates states) const
+{
+    target.draw(scoreTextTitle, states);
+    target.draw(scoreText, states);
+    target.draw(maxScoreTextTitle, states);
+    target.draw(maxScoreText, states);
+    target.draw(linesTextTitle, states);
+    target.draw(linesText, states);
+    target.draw(developerInfo, states);
+
+    switch (gameState) {
+    case GameState::GameOver:
+        target.draw(gameOverText, states);
+        break;
+    case GameState::NewScore:
+        target.draw(newScoreText, states);
+        break;
+    default:
+        break;
+    }
 }

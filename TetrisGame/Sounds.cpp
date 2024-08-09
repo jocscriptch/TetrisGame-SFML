@@ -2,46 +2,48 @@
 
 Sounds::Sounds()
 {
-	music.openFromFile("music.ogg");
-	music.setLoop(true);
-	music.setVolume(50);
+    if (!music.openFromFile("music.ogg")) {
+        cerr << "Error al cargar la música de fondo" << endl;
+    }
+    music.setLoop(true);
+    music.setVolume(50);
 
-	if (!lineSoundBuffer.loadFromFile("line.ogg")) {
-		cout << "Error al cargar sonido de linea" << endl;
-	}
-	if (!newScoreSoundBuffer.loadFromFile("newScore.ogg")) {
-		cout << "Error al cargar sonido record" << endl;
-	}
-	if (!gameOverSoundBuffer.loadFromFile("gameover.ogg")) {
-		cout << "Error al cargar sonido gameover" << endl;
-	}
+    if (!lineSoundBuffer.loadFromFile("line.ogg")) {
+        cerr << "Error al cargar el sonido de línea" << endl;
+    }
+    if (!newScoreSoundBuffer.loadFromFile("newScore.ogg")) {
+        cerr << "Error al cargar el sonido de nuevo récord" << endl;
+    }
+    if (!gameOverSoundBuffer.loadFromFile("gameover.ogg")) {
+        cerr << "Error al cargar el sonido de fin de juego" << endl;
+    }
 
-	lineSound.setBuffer(lineSoundBuffer);
-	newScoreSound.setBuffer(newScoreSoundBuffer);
-	gameOverSound.setBuffer(gameOverSoundBuffer);
+    lineSound.setBuffer(lineSoundBuffer);
+    newScoreSound.setBuffer(newScoreSoundBuffer);
+    gameOverSound.setBuffer(gameOverSoundBuffer);
 }
 
-void Sounds::PlayMusic()
+void Sounds::playMusic()
 {
-	music.play();
-
-}
-void Sounds::PauseMusic()
-{
-	music.pause();
+    music.play();
 }
 
-void Sounds::PlayLine()
+void Sounds::pauseMusic()
 {
-	lineSound.play();
+    music.pause();
 }
 
-void Sounds::PlayNewScore()
+void Sounds::playLine()
 {
-	newScoreSound.play();
+    lineSound.play();
 }
 
-void Sounds::PlayGameOver()
+void Sounds::playNewScore()
 {
-	gameOverSound.play();
+    newScoreSound.play();
+}
+
+void Sounds::playGameOver()
+{
+    gameOverSound.play();
 }

@@ -1,106 +1,134 @@
 #include <iostream>
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 #include "Board.h"
 #include "UserInterface.h"
 #include "Sounds.h"
 #include <fstream>
-
 using namespace std;
 using namespace sf;
 
+// para manejar la entrada del usuario
+void handleInput(Board& board, int& right, int& left, int& up)
+{
+    if (Keyboard::isKeyPressed(Keyboard::Up) && !up) {
+        board.rotatePart();
+        up = 1;
+    }
+    else if (!Keyboard::isKeyPressed(Keyboard::Up)) {
+        up = 0;
+    }
+
+    if (Keyboard::isKeyPressed(Keyboard::Down)) {
+        board.updateLimitTimer(5);
+    }
+    else {
+        board.updateLimitTimer(25);
+    }
+
+    if (Keyboard::isKeyPressed(Keyboard::Right) && !right) {
+        board.moveRight();
+        right = 1;
+    }
+    else if (!Keyboard::isKeyPressed(Keyboard::Right)) {
+        right = 0;
+    }
+    else if (Keyboard::isKeyPressed(Keyboard::Right) && right) {
+        right++;
+        if (right == 6) right = 0;
+    }
+
+    if (Keyboard::isKeyPressed(Keyboard::Left) && !left) {
+        board.moveLeft();
+        left = 1;
+    }
+    else if (!Keyboard::isKeyPressed(Keyboard::Left)) {
+        left = 0;
+    }
+    else if (Keyboard::isKeyPressed(Keyboard::Left) && left) {
+        left++;
+        if (left == 6) left = 0;
+    }
+}
+
+// para actualizar el estado del juego
+bool updateGame(Board& board, Sounds& sounds, UserInterface& ui, int& score, int& maxScore, int& lines)
+{
+    if (board.updateBoard()) {
+        if (!board.installPart()) {
+            sounds.pauseMusic();
+            if (score > maxScore) {
+                ui.triggerNewScore();
+                ofstream out("maxScore.txt");
+                out << score;
+                sounds.playNewScore();
+            }
+            else {
+                ui.triggerGameOver();
+                sounds.playGameOver();
+            }
+            return false;
+        }
+    }
+    board.updateBoardColors();
+
+    int completedLines = board.checkLine();
+    if (completedLines > 0) {
+        lines += completedLines;
+        ui.setLines(lines);
+        sounds.playLine();
+    }
+
+    int newScore = completedLines * 5;
+    score += newScore;
+    ui.setScore(score);
+
+    return true;
+}
+
 int main()
 {
-	Board board;
-	UserInterface ui;
-	Sounds sounds;
+    Board board;
+    UserInterface ui;
+    Sounds sounds;
 
-	RenderWindow window(VideoMode(600, 600), "Tetris");
-	window.setFramerateLimit(60);
+    RenderWindow window(VideoMode(600, 600), "Tetris");
+    window.setFramerateLimit(60);
 
-	board.installPart();
+    board.installPart();
 
-	int right = 0, left = 0, up = 0;
-	int score = 0;
-	int maxScore = 0;
-	bool live = 1;
+    int right = 0, left = 0, up = 0;
+    int score = 0;
+    int maxScore = 0;
+    int lines = 0;
+    bool isGameRunning = true;
 
-	fstream in("maxScore.txt");
-	in >> maxScore;
+    // leer el record desde el archivo
+    fstream in("maxScore.txt");
+    in >> maxScore;
+    ui.setMaxScore(maxScore);
+    ui.setScore(score);
+    ui.setLines(lines);
 
-	ui.SetMaxCore(maxScore);
-	ui.SetScore(score);
+    sounds.playMusic();
 
-	sounds.PlayMusic();
+    while (window.isOpen()) {
+        Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == Event::Closed) {
+                window.close();
+            }
+        }
 
-	while (window.isOpen())
-	{
-		Event event;
-		while (window.pollEvent(event)){
-			if (event.type == Event::Closed) window.close();
-		}
-		if (live) {
-			//rotacion
-			if (Keyboard::isKeyPressed(Keyboard::Up) && !up)board.rotatePart(), up = 1;
-			else if (!Keyboard::isKeyPressed(Keyboard::Up)) up = 0;
+        if (isGameRunning) {
+            handleInput(board, right, left, up);
+            isGameRunning = updateGame(board, sounds, ui, score, maxScore, lines);
+        }
 
-			// acelerar la caida de piezas
-			if (Keyboard::isKeyPressed(Keyboard::Down)) board.updateLimitTimer(5);
-			else board.updateLimitTimer(25);
-
-			//mover las piezas a la derecha
-			if (Keyboard::isKeyPressed(Keyboard::Right) && !right) {
-				board.right();
-				right = 1;
-			}
-			else if (!Keyboard::isKeyPressed(Keyboard::Right)) {
-				right = 0;
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Right) && right) {
-				right++;
-				if (right == 6) right = 0;
-			}
-
-			//mover las piezas a la izquierda
-			if (Keyboard::isKeyPressed(Keyboard::Left) && !left) {
-				board.left();
-				left = 1;
-			}
-			else if (!Keyboard::isKeyPressed(Keyboard::Left)) {
-				left = 0;
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Left) && left) {
-				left++;
-				if (left == 6) left = 0;
-			}
-
-			if (board.updateBoard()) {
-				if (!board.installPart()) {
-					live = 0;
-					board.CleanBoard();
-					sounds.PauseMusic();
-					if (score > maxScore) {
-						ui.NewScore();
-						ofstream out("maxScore.txt");
-						out << score;
-						sounds.PlayNewScore();
-					}
-					else {
-						ui.GameOver();
-						sounds.PlayGameOver();
-					}
-				}
-			}
-			board.updateBoardColors();
-
-			int newScore = board.checkLine() * 5;
-			score += newScore;
-			ui.SetScore(score);
-			if (newScore > 0)sounds.PlayLine();
-		}
-		window.clear(Color(20, 20, 20));
-		window.draw(board);
-		window.draw(ui);
-		window.display();
-	}
-	return 0;
+        window.clear(Color(20, 20, 20));
+        window.draw(board);
+        window.draw(ui);
+        board.drawPreview(window);
+        window.display();
+    }
+    return 0;
 }
